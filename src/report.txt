@@ -1,0 +1,30 @@
+Project Smart_Calc_v1.0 by fletamar
+Operations:
+
+Parentheses (/)/
+Addition (+)
+Subtraction and unary minus (-)
+Multiplication (*)
+Division (/)
+Remainder of division (%)
+Exponentiation (^)
+Square root of a number (sqrt)
+Trigonometric functions:
+
+Sine (sin)
+Cosine (cos)
+Tangent (tan)
+Arcsine (asin)
+Arccosine (acos)
+Arctangent (atan)
+Natural logarithm (log)
+Decimal logarithm (ln)
+Build type: qmake
+Project build using target: make start
+Uninstalling the project using target: make uninstall
+Tests: make test
+Coverage with tests: make gcov_report
+Project description: make dvi
+The calculator is designed for performing arithmetic operations and functions with the ability to plot points on a graph. The application also supports a credit calculator function.
+by fletamar
+
