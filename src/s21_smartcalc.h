@@ -46,31 +46,40 @@ typedef struct stack {
 } stack;
 
 double smart_calc(char *str, double x);
-int s21_check_first_elem(char *str);
-int s21_check_last_elem(char *str, int len);
+int isFirstElem(char *str);
+int isLastElem(char *str, int len);
 int validator(char *str, char *expression);
-int trigonometry_check(char *str, int i);
+int checkTrig(char *str, int i);
+
 void is_trigonometry(char *str, char *expression, int *j, int *i);
-void push(stack **node, char oper, int priority, double num);
-double pop_numbers(stack **node);
-char pop_oper(stack **node);
-int priority_is(char *exp, int *i);
-void my_atof(stack **stack_of_num, stack *stack_of_op, char *num_str, int *j,
+void push(stack **node, char op, int priority, double num);
+double popNum(stack **node);
+char popOp(stack **node);
+int getPrior(char *expr, int *i);
+
+void strToDouble(stack **stack_of_num, stack *stack_of_op, char *num_str, int *j,
              flags *flag);
-void check_next(stack **stack_of_num, stack *stack_of_op, char *num_str,
+
+void checkNext(stack **stack_of_num, stack *stack_of_op, char *num_str,
                 char *expression, int *i, int *j, flags *flag);
-int check_condition_for_push(int prioritet, stack *stack_of_op,
+
+
+
+int canPush(int prioritet, stack *stack_of_op,
                              char *expression, int *i);
-void math_operation(char op, double var_1, double var_2, double *res);
-void trigonometry_operation(char op, double var, double *res);
-int check_func_trig(stack **op);
-void dijkstra(stack **stack_of_op, stack **stack_of_num, double *res,
+
+void execOp(char op, double var_1, double var_2, double *out);
+void execTrig(char op, double var, double *res);
+int isTrig(stack **op);
+
+void dijkstraAlg(stack **stack_of_op, stack **stack_of_num, double *res,
               char *expression, int *i, double queue, int prioritet,
               flags *flag);
+
 double total(stack **num, stack **op);
-void total_res(stack **num, stack **op, double *res);
-void schet(stack **stack_of_num, stack **stack_of_op, double *res);
-double polish_notation(char *expression, double x);
+void finalResult(stack **num, stack **op, double *res);
+void calcOp(stack **stack_of_num, stack **stack_of_op, double *out);
+double evalRPN(char *expression, double x);
 
 // Credit caluclator
 void credit_calc(double sum, double years, double months, double percent,

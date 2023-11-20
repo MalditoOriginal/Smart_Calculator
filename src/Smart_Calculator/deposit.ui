@@ -199,7 +199,7 @@ border-radius:3px;</string>
     <number>15</number>
    </property>
   </widget>
-  <widget class="QSpinBox" name="mounths">
+  <widget class="QSpinBox" name="months">
    <property name="geometry">
     <rect>
      <x>300</x>
@@ -238,7 +238,7 @@ border-radius:3px;</string>
     <string> months</string>
    </property>
   </widget>
-  <widget class="QDoubleSpinBox" name="stavka">
+  <widget class="QDoubleSpinBox" name="rate">
    <property name="geometry">
     <rect>
      <x>200</x>
@@ -369,7 +369,7 @@ border-radius:3px;</string>
     <string> Total payment</string>
    </property>
   </widget>
-  <widget class="QLabel" name="dohod">
+  <widget class="QLabel" name="income">
    <property name="geometry">
     <rect>
      <x>200</x>
