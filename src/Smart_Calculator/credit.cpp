@@ -24,7 +24,7 @@ void Credit::on_calculate_clicked()
         percent = ui->percent->text().toDouble();
         min_payment = 0, max_payment = 0;
         if (ui->an->isChecked()) {
-            credit_calc(amount, years, months, percent, &pay, &overpay, &total, 0, &min_payment, &max_payment);
+            calcCredit(amount, years, months, percent, &pay, &overpay, &total, 0, &min_payment, &max_payment);
             monthly_payment = QString::number(pay, 'g', 7);
             total_sum = QString::number(total, 'g', 7);
             overpayment = QString::number(overpay, 'g', 7);
@@ -33,7 +33,7 @@ void Credit::on_calculate_clicked()
             ui->overpay->setText(overpayment);
 
         } else if (ui->dif->isChecked()) {
-            credit_calc(amount, years, months, percent, &pay, &overpay, &total, 1, &min_payment, &max_payment);
+            calcCredit(amount, years, months, percent, &pay, &overpay, &total, 1, &min_payment, &max_payment);
             monthly_payment = QString::number(max_payment, 'g', 7);
             min_pay_for_dif = QString::number(min_payment, 'g', 7);
             total_sum = QString::number(total, 'g', 7);

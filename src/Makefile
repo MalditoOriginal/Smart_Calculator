@@ -42,9 +42,6 @@ uninstall: clean
 package: install 
 	cd .. && tar -czf $(TARGET).tgz src
 
-dvi:
-	open report.txt
-
 test: s21_smartcalc.a
 	$(CC) unit_test.c -lcheck -L. s21_smartcalc.a -o smartcalc_test
 	./smartcalc_test
@@ -65,10 +62,8 @@ valgrind_check: test
 leak: test
 	CK_FORK=no leaks -atExit -- ./s21_smartcalc
 
-style:
-	cp ../materials/linters/.clang-format ./
-	clang-format -n *.c *.h
-	rm .clang-format
+style_test:
+	clang-format -style=Google -n *.c *.h
 
 style_change:
 	clang-format -style=Google -i *.c *.h

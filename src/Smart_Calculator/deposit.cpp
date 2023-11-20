@@ -45,7 +45,7 @@ void Deposit::on_calculate_clicked()
         deposit_rate = ui->rate->text().toDouble();
         profitability = 0, total = 0;
         if (ui->no->isChecked()) {
-        deposit_calc(amount, days, deposit_rate, &profitability, &total, 1);
+        calcDeposit(amount, days, deposit_rate, &profitability, &total, 1);
         income = QString::number(profitability, 'g', 7);
         total_sum = QString::number(total, 'g', 7);
         ui->income->setText(income);

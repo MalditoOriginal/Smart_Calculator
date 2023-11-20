@@ -10,7 +10,7 @@ double smart_calc(char *str, double x) {
   }
 
   // Validate the input string and store the result in expr
-  if (!validator(str, expression)) {
+  if (!checkValidity(str, expression)) {
     // Handle validation failure
     free(expression);
     return NAN;
@@ -23,7 +23,7 @@ double smart_calc(char *str, double x) {
 }
 
 /* Validate and convert a str into a valid epxr */
-int validator(char *str, char *expression) {
+int checkValidity(char *str, char *expression) {
   int isValid = TRUE, j = 0, brackets = 0;
   int len = (int)strlen(str);
   if (len > 255) return FALSE;
@@ -37,7 +37,7 @@ int validator(char *str, char *expression) {
       expression[j++] = '0';
       expression[j++] = Sub;
     } else if (checkTrig(str, i)) {
-      is_trigonometry(str, expression, &j, &i);
+      is_Trig(str, expression, &j, &i);
     } else if (str[i] == l_bracket && str[i + 1] == Sub) {
       expression[j++] = l_bracket;
       expression[j++] = '0';
@@ -76,7 +76,7 @@ int checkTrig(char *str, int i) {
 }
 
 /* Check if a str contains a trig func and add it to the epxr */
-void is_trigonometry(char *str, char *expression, int *j, int *i) {
+void is_Trig(char *str, char *expression, int *j, int *i) {
   if (str[*i] == 'c' && str[(*i) + 1] == 'o' && str[(*i) + 2] == 's') {
     expression[(*j)++] = Cos;
     (*i) += 2;
@@ -112,7 +112,7 @@ void is_trigonometry(char *str, char *expression, int *j, int *i) {
 }
 
 /* Add a new element to the stack */
-void push(stack **node, char op, int priority, double num) {
+void pushOps(stack **node, char op, int priority, double num) {
   stack *list = calloc(1, sizeof(stack));
   if (list != NULL) {
     list->operation = op;
@@ -217,20 +217,20 @@ void finalResult(stack **num, stack **op, double *out) {
     char oper = popOp(op);
     double var_1 = popNum(num);
     execTrig(oper, var_1, out);
-    push(num, '\0', 0, *out);
+    pushOps(num, '\0', 0, *out);
   } else {
     while ((*num)->next != NULL) {
       char oper = popOp(op);
       double var_1 = popNum(num);
       double var_2 = popNum(num);
       execOp(oper, var_1, var_2, out);
-      push(num, '\0', 0, *out);
+      pushOps(num, '\0', 0, *out);
     }
   }
 }
 
 /* Return final result as double */
-double total(stack **num, stack **op) {
+double convOutToD(stack **num, stack **op) {
   double out = 0.0;
   if ((*op) != NULL && (*num) != NULL) {
     finalResult(num, op, &out);
@@ -246,15 +246,15 @@ void calcOp(stack **stack_of_num, stack **stack_of_op, double *out) {
   double var_1 = popNum(stack_of_num);
   if (op >= 65 && op <= 84) {
     execTrig(op, var_1, out);
-    push(stack_of_num, '\0', 0, *out);
+    pushOps(stack_of_num, '\0', 0, *out);
   } else {
     double var_2 = popNum(stack_of_num);
     execOp(op, var_1, var_2, out);
-    push(stack_of_num, '\0', 0, *out);
+    pushOps(stack_of_num, '\0', 0, *out);
   }
 }
 
-/* Convert a str of digits into a double and push it onto a stack of numbers */
+/* Convert a str of digits into a double and pushOps it onto a stack of numbers */
 void strToDouble(stack **stack_of_num, stack *stack_of_op, char *num_str, int *j,
              flags *flag) {
   /* Ptr to the first char after the converted number */
@@ -267,7 +267,7 @@ void strToDouble(stack **stack_of_num, stack *stack_of_op, char *num_str, int *j
     var *= -1;
     flag->unary_minus--;
   }
-  push(stack_of_num, '\0', 0, var);
+  pushOps(stack_of_num, '\0', 0, var);
   *j = 0;
 
   /* Clear the string of digits */
@@ -297,8 +297,8 @@ int isTrig(stack **op) {
           (*op)->operation == Sqrt);
 }
 
-/* Check if an operation can be pushed onto the stack of operations */
-int canPush(int prior, stack *stack_of_op,
+/* Check if an operation can be pushOpsed onto the stack of operations */
+int canpushOps(int prior, stack *stack_of_op,
                              char *expression, int *i) {
   return (stack_of_op == NULL || prior > stack_of_op->priority ||
           (prior == 4 && stack_of_op->priority == 4) ||
@@ -314,10 +314,10 @@ void dijkstraAlg(stack **stack_of_op, stack **stack_of_num, double *out,
       calcOp(stack_of_num, stack_of_op, out);
     if ((*stack_of_op) != NULL && (*stack_of_op)->priority == prior) {
       calcOp(stack_of_num, stack_of_op, out);
-      push(stack_of_op, expression[*i], prior, queue);
+      pushOps(stack_of_op, expression[*i], prior, queue);
     } else if (expression[*i] != r_bracket ||
                (*stack_of_op)->priority < prior || (*stack_of_op) == NULL) {
-      push(stack_of_op, expression[*i], prior, queue);
+      pushOps(stack_of_op, expression[*i], prior, queue);
     } else {
       popOp(stack_of_op);
     }
@@ -346,7 +346,7 @@ void dijkstraAlg(stack **stack_of_op, stack **stack_of_num, double *out,
       } else {
         if ((*stack_of_op) != NULL && (*stack_of_op)->priority == prior)
           calcOp(stack_of_num, stack_of_op, out);
-        push(stack_of_op, expression[*i], prior, queue);
+        pushOps(stack_of_op, expression[*i], prior, queue);
       }
     }
   }
@@ -364,15 +364,15 @@ double evalRPN(char *expression, double x) {
     int prior = getPrior(expression, &i);
     if (!prior) {
       if (expression[i] == 'x') {
-        push(&stack_of_num, '\0', 0, x);
+        pushOps(&stack_of_num, '\0', 0, x);
       } else {
         num_str[j++] = expression[i];
         checkNext(&stack_of_num, stack_of_op, num_str, expression, &i, &j,
                    &flag);
       }
     } else {
-      if (canPush(prior, stack_of_op, expression, &i)) {
-        push(&stack_of_op, expression[i], prior, ++queue);
+      if (canpushOps(prior, stack_of_op, expression, &i)) {
+        pushOps(&stack_of_op, expression[i], prior, ++queue);
         if (prior == 1) flag.open_bracket++;
       } else if ((expression[i - 1] == Mul || expression[i - 1] == Div ||
                   expression[i - 1] == Pow) &&
@@ -385,7 +385,7 @@ double evalRPN(char *expression, double x) {
     }
   }
   if (stack_of_op != NULL)
-    out = total(&stack_of_num, &stack_of_op);
+    out = convOutToD(&stack_of_num, &stack_of_op);
   else
     out = stack_of_num->num;
   popNum(&stack_of_num);
@@ -393,41 +393,41 @@ double evalRPN(char *expression, double x) {
 }
 
 // Credit calculator
-void credit_calc(double sum, double years, double months, double percent,
-                 double *pay, double *overpay, double *total, int flag,
+void calcCredit(double sum, double years, double months, double percent,
+                 double *pay, double *overpay, double *convOutToD, int flag,
                  double *min_payment, double *max_payment) {
   double term = years * 12 + months;
   double P = percent / 12 / 100;
   if (!flag) {
     double N = P / (pow((1 + P), (int)term) - 1);
     *pay = sum * (P + N);
-    *total = *pay * term;
-    *overpay = *total - sum;
+    *convOutToD = *pay * term;
+    *overpay = *convOutToD - sum;
   } else {
     double first_sum = sum;
     double b =
         sum / term;  //  Calculation of the monthly principal payment.
     double Imax = sum * P;  // Share of interest in the monthly payment.
     *max_payment = b + Imax;  // Monthly installment amount
-    *total = *max_payment;
+    *convOutToD = *max_payment;
     term--;
     double Imin = 0;
     while (term) {
       sum -= b;
       Imin = sum * P;
       *min_payment = b + Imin;
-      *total += *min_payment;
+      *convOutToD += *min_payment;
       term--;
     }
-    *overpay = *total - first_sum;
+    *overpay = *convOutToD - first_sum;
   }
 }
 
 // Deposit calculator
-void deposit_calc(double amount, int days, double deposit_rate,
-                  double *profitability, double *total, int flag) {
+void calcDeposit(double amount, int days, double deposit_rate,
+                  double *profitability, double *convOutToD, int flag) {
   if (flag) {
     *profitability = (amount * deposit_rate * (double)days / 365) / 100;
-    *total = amount + *profitability;
+    *convOutToD = amount + *profitability;
   }
 }

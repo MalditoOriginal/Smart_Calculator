@@ -85,7 +85,7 @@ void MainWindow::mul_before_num()
 
 }
 
-void MainWindow::digits_numbers() // цифры
+void MainWindow::digits_numbers() // numbers
 {
     QPushButton *button = (QPushButton *)sender();
     if(!x_line) {
@@ -119,7 +119,7 @@ void MainWindow::digits_numbers() // цифры
 }
 
 
-void MainWindow::zero() // 0
+void MainWindow::zero() // Zero
 {
     QPushButton *button = (QPushButton *)sender();
 
@@ -143,7 +143,7 @@ void MainWindow::zero() // 0
 
 }
 
-void MainWindow::on_pushButton_dot_clicked() // точка
+void MainWindow::on_pushButton_dot_clicked() // Dot
 {
     QPushButton *button = (QPushButton *)sender();
     if(!x_line) {
@@ -161,7 +161,7 @@ void MainWindow::on_pushButton_dot_clicked() // точка
     }
 }
 
-void MainWindow::on_pushButton_x_clicked() // х
+void MainWindow::on_pushButton_x_clicked() // Var X
 {
 
     QPushButton *button = (QPushButton *)sender();
@@ -182,8 +182,6 @@ void MainWindow::on_pushButton_x_clicked() // х
         }
     }
 }
-
-
 
 void MainWindow::math_operations() // + * / ^ %
 {
@@ -224,7 +222,7 @@ void MainWindow::minus() // -
     }
 }
 
-void MainWindow::trigonometry() // тригонометрия
+void MainWindow::trigonometry() // Trigonometry
 {
     QPushButton *button = (QPushButton *)sender();
 
@@ -247,7 +245,6 @@ void MainWindow::trigonometry() // тригонометрия
     }
 
 }
-
 
 void MainWindow::brackets() // brackets
 {
@@ -274,7 +271,6 @@ void MainWindow::brackets() // brackets
 
 }
 
-
 void MainWindow::on_pushButton_AC_clicked() // clear
 {
 
@@ -284,7 +280,7 @@ void MainWindow::on_pushButton_AC_clicked() // clear
         flags_for_x();
 }
 
-void MainWindow::on_pushButton_x_num_clicked() // перевод на поле для ввода х
+void MainWindow::on_pushButton_x_num_clicked() // Transfer to the input field 'x'
 {
     if(x_symbol) x_line = 1;
     flags_for_x();
@@ -292,15 +288,13 @@ void MainWindow::on_pushButton_x_num_clicked() // перевод на поле �
 
 }
 
-
-void MainWindow::on_pushButton_ok_clicked() // завершить ввод х
+void MainWindow::on_pushButton_ok_clicked() // Complete input 'x'
 {
     if (!ui->x_num->text().endsWith("."))
     x_line = 0;
 }
 
-
-void MainWindow::on_pushButton_eq_clicked() // равно
+void MainWindow::on_pushButton_eq_clicked() // Equality
 {
     if((number || ui->Result_show->text().endsWith("x") || ui->Result_show->text().endsWith(")") ) && !ui->Result_show->text().endsWith(".") && !open_bracket) {
     QString str = ui->Result_show->text();

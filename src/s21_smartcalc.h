@@ -48,11 +48,11 @@ typedef struct stack {
 double smart_calc(char *str, double x);
 int isFirstElem(char *str);
 int isLastElem(char *str, int len);
-int validator(char *str, char *expression);
+int checkValidity(char *str, char *expression);
 int checkTrig(char *str, int i);
 
-void is_trigonometry(char *str, char *expression, int *j, int *i);
-void push(stack **node, char op, int priority, double num);
+void is_Trig(char *str, char *expression, int *j, int *i);
+void pushOps(stack **node, char op, int priority, double num);
 double popNum(stack **node);
 char popOp(stack **node);
 int getPrior(char *expr, int *i);
@@ -76,18 +76,18 @@ void dijkstraAlg(stack **stack_of_op, stack **stack_of_num, double *res,
               char *expression, int *i, double queue, int prioritet,
               flags *flag);
 
-double total(stack **num, stack **op);
+double convOutToD(stack **num, stack **op);
 void finalResult(stack **num, stack **op, double *res);
 void calcOp(stack **stack_of_num, stack **stack_of_op, double *out);
 double evalRPN(char *expression, double x);
 
 // Credit caluclator
-void credit_calc(double sum, double years, double months, double percent,
+void calcCredit(double sum, double years, double months, double percent,
                  double *pay, double *overpay, double *total, int flag,
                  double *min_payment, double *max_payment);
 
 // Deposit calculator
-void deposit_calc(double amount, int days, double deposit_rate,
+void calcDeposit(double amount, int days, double deposit_rate,
                   double *profitability, double *total, int flag);
 
 #endif  // SRC_S21_SMARTCALC_H
