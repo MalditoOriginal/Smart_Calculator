@@ -274,6 +274,7 @@ void strToDouble(stack **stack_of_num, stack *stack_of_op, char *num_str, int *j
   memset(num_str, '\0', 50);
 }
 
+/* Check the next char in the expr */
 void checkNext(stack **stack_of_num, stack *stack_of_op, char *num_str,
                 char *expression, int *i, int *j, flags *flag) {
   if (*i != (int)strlen(expression) - 1) {
@@ -287,6 +288,7 @@ void checkNext(stack **stack_of_num, stack *stack_of_op, char *num_str,
   }
 }
 
+/* Check if the operation at the top of the stack of operations is a trig func */
 int isTrig(stack **op) {
   return ((*op)->operation == Cos || (*op)->operation == Sin ||
           (*op)->operation == Tan || (*op)->operation == Acos ||
@@ -295,6 +297,7 @@ int isTrig(stack **op) {
           (*op)->operation == Sqrt);
 }
 
+/* Check if an operation can be pushed onto the stack of operations */
 int canPush(int prior, stack *stack_of_op,
                              char *expression, int *i) {
   return (stack_of_op == NULL || prior > stack_of_op->priority ||
@@ -302,6 +305,7 @@ int canPush(int prior, stack *stack_of_op,
           (prior == 1 && expression[*i] == l_bracket));
 }
 
+/* Implement Dijkstra's Shunting-Yard algorithm */
 void dijkstraAlg(stack **stack_of_op, stack **stack_of_num, double *out,
               char *expression, int *i, double queue, int prior,
               flags *flag) {
@@ -348,8 +352,9 @@ void dijkstraAlg(stack **stack_of_op, stack **stack_of_num, double *out,
   }
 }
 
+/* Final calculation of RPN */
 double evalRPN(char *expression, double x) {
-  double res = 0.0, queue = 0.0;
+  double out = 0.0, queue = 0.0;
   stack *stack_of_op = NULL;
   stack *stack_of_num = NULL;
   flags flag = {0};
@@ -374,17 +379,17 @@ double evalRPN(char *expression, double x) {
                  expression[i] == Sub) {
         flag.unary_minus++;
       } else {
-        dijkstraAlg(&stack_of_op, &stack_of_num, &res, expression, &i, queue,
+        dijkstraAlg(&stack_of_op, &stack_of_num, &out, expression, &i, queue,
                  prior, &flag);
       }
     }
   }
   if (stack_of_op != NULL)
-    res = total(&stack_of_num, &stack_of_op);
+    out = total(&stack_of_num, &stack_of_op);
   else
-    res = stack_of_num->num;
+    out = stack_of_num->num;
   popNum(&stack_of_num);
-  return res;
+  return out;
 }
 
 // Credit calculator
