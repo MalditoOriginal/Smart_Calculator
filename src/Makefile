@@ -19,7 +19,7 @@ ADD_LIB =
 TEST_FLAGS =-lcheck
 endif
 
-all: s21_smartcalc
+all: s21_smartcalc gcov_report
 
 s21_smartcalc: s21_smartcalc.a
 	$(CC) unit_test.c -lcheck -L. s21_smartcalc.a -o s21_smartcalc
@@ -57,7 +57,7 @@ clean:
 	$(RM) *.a *.o *.info *.gcno *.gcda *.gcov smartcalc_test report a.out s21_smartcalc smartcalc_test.c .clang-format
 
 valgrind_check: test
-	CK_FORK=no valgrind --vgdb=no --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./s21_matrix
+	CK_FORK=no valgrind --vgdb=no --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./s21_smartcalc
 
 leak: test
 	CK_FORK=no leaks -atExit -- ./s21_smartcalc

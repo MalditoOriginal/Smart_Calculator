@@ -63,7 +63,8 @@ void strToDouble(stack **stack_of_num, stack *stack_of_op, char *num_str, int *j
 void checkNext(stack **stack_of_num, stack *stack_of_op, char *num_str,
                 char *expression, int *i, int *j, flags *flag);
 
-
+int canPushOps(int prior, stack *stack_of_op,
+                             char *expression, int *i);
 
 int canPush(int prioritet, stack *stack_of_op,
                              char *expression, int *i);

@@ -298,7 +298,7 @@ int isTrig(stack **op) {
 }
 
 /* Check if an operation can be pushOpsed onto the stack of operations */
-int canpushOps(int prior, stack *stack_of_op,
+int canPushOps(int prior, stack *stack_of_op,
                              char *expression, int *i) {
   return (stack_of_op == NULL || prior > stack_of_op->priority ||
           (prior == 4 && stack_of_op->priority == 4) ||
@@ -307,87 +307,115 @@ int canpushOps(int prior, stack *stack_of_op,
 
 /* Implement Dijkstra's Shunting-Yard algorithm */
 void dijkstraAlg(stack **stack_of_op, stack **stack_of_num, double *out,
-              char *expression, int *i, double queue, int prior,
-              flags *flag) {
-  if ((*stack_of_op)->operation == Pow) {
-    while ((*stack_of_op) != NULL && (*stack_of_op)->operation == Pow)
-      calcOp(stack_of_num, stack_of_op, out);
-    if ((*stack_of_op) != NULL && (*stack_of_op)->priority == prior) {
-      calcOp(stack_of_num, stack_of_op, out);
-      pushOps(stack_of_op, expression[*i], prior, queue);
+                  char *expression, int *i, double queue, int prior,
+                  flags *flag) {
+  stack *op = *stack_of_op;
+  stack *num = *stack_of_num;
+  // Check if the current operator is Pow
+  if (op->operation == Pow) {
+    // Process consecutive Pow operators
+    while (op != NULL && op->operation == Pow) {
+      calcOp(&num, &op, out);
+    }
+    // Check if the current operator has the same priority
+    if (op != NULL && op->priority == prior) {
+      calcOp(&num, &op, out);
+      pushOps(&op, expression[*i], prior, queue);
     } else if (expression[*i] != r_bracket ||
-               (*stack_of_op)->priority < prior || (*stack_of_op) == NULL) {
-      pushOps(stack_of_op, expression[*i], prior, queue);
+               op->priority < prior || op == NULL) {
+      // Push the current operator onto the stack
+      pushOps(&op, expression[*i], prior, queue);
     } else {
-      popOp(stack_of_op);
+      // Pop the top operator from the stack
+      popOp(&op);
     }
   } else {
-    if ((*stack_of_op)->operation == l_bracket && expression[*i] == r_bracket) {
-      popOp(stack_of_op);
-      if ((*stack_of_op) != NULL) calcOp(stack_of_num, stack_of_op, out);
-    } else if ((*stack_of_op)->operation != l_bracket) {
-      calcOp(stack_of_num, stack_of_op, out);
+    // Check for special case of closing bracket after opening bracket
+    if (op->operation == l_bracket && expression[*i] == r_bracket) {
+      popOp(&op);
+      if (op != NULL) {
+        // Process the next operation after closing the bracket
+        calcOp(&num, &op, out);
+      }
+    } else if (op->operation != l_bracket) {
+      // Process the current operator
+      calcOp(&num, &op, out);
+      // Check for special case of closing bracket with open_bracket flag
       if (expression[*i] == r_bracket && flag->open_bracket) {
         flag->stop = 1;
+        // Handle unary minus if needed
         if (flag->unary_minus) {
-          (*stack_of_num)->num *= -1;
+          num->num *= -1;
           flag->unary_minus--;
         }
-        while ((*stack_of_op)->operation != l_bracket && flag->stop) {
-          calcOp(stack_of_num, stack_of_op, out);
-          if ((*stack_of_op)->operation == l_bracket) flag->stop = 0;
+        // Process operations until an opening bracket is encountered
+        while (op->operation != l_bracket && flag->stop) {
+          calcOp(&num, &op, out);
+          if (op->operation == l_bracket) {
+            flag->stop = 0;
+          }
         }
         flag->open_bracket--;
-        popOp(stack_of_op);
-        if ((*stack_of_op) != NULL && isTrig(stack_of_op) &&
-            (*stack_of_op)->next != NULL) {
-          calcOp(stack_of_num, stack_of_op, out);
+        // Pop the opening bracket from the stack
+        popOp(&op);
+        // Process additional operation if it's a trigonometric function
+        if (op != NULL && isTrig(&op) && op->next != NULL) {
+          calcOp(&num, &op, out);
         }
       } else {
-        if ((*stack_of_op) != NULL && (*stack_of_op)->priority == prior)
-          calcOp(stack_of_num, stack_of_op, out);
-        pushOps(stack_of_op, expression[*i], prior, queue);
+        // Check if the current operator has the same priority
+        if (op != NULL && op->priority == prior) {
+          calcOp(&num, &op, out);
+        }
+        // Push the current operator onto the stack
+        pushOps(&op, expression[*i], prior, queue);
       }
     }
   }
+  // Update the original pointers with the modified stacks
+  *stack_of_op = op;
+  *stack_of_num = num;
 }
 
 /* Final calculation of RPN */
 double evalRPN(char *expression, double x) {
-  double out = 0.0, queue = 0.0;
+  double out = 0.0;
   stack *stack_of_op = NULL;
   stack *stack_of_num = NULL;
   flags flag = {0};
   char num_str[100];
   int j = 0, len = (int)strlen(expression);
+
+  // Loop through the characters in the expression
   for (int i = 0; i < len; ++i) {
     int prior = getPrior(expression, &i);
+    // Check if the current character is a number or variable
     if (!prior) {
       if (expression[i] == 'x') {
+        // Push the variable 'x' onto the number stack
         pushOps(&stack_of_num, '\0', 0, x);
       } else {
+        // Build a number string and check for the next character
         num_str[j++] = expression[i];
-        checkNext(&stack_of_num, stack_of_op, num_str, expression, &i, &j,
-                   &flag);
+        checkNext(&stack_of_num, stack_of_op, num_str, expression, &i, &j, &flag);
       }
     } else {
-      if (canpushOps(prior, stack_of_op, expression, &i)) {
-        pushOps(&stack_of_op, expression[i], prior, ++queue);
-        if (prior == 1) flag.open_bracket++;
+      // Check if the operator can be pushed onto the operator stack
+      if (canPushOps(prior, stack_of_op, expression, &i)) {
+        pushOps(&stack_of_op, expression[i], prior, ++flag.open_bracket);
       } else if ((expression[i - 1] == Mul || expression[i - 1] == Div ||
-                  expression[i - 1] == Pow) &&
-                 expression[i] == Sub) {
+                  expression[i - 1] == Pow) && expression[i] == Sub) {
+        // Handle unary minus
         flag.unary_minus++;
       } else {
-        dijkstraAlg(&stack_of_op, &stack_of_num, &out, expression, &i, queue,
-                 prior, &flag);
+        // Process the operator using Dijkstra's Shunting-Yard algorithm
+        dijkstraAlg(&stack_of_op, &stack_of_num, &out, expression, &i, flag.open_bracket, prior, &flag);
       }
     }
   }
-  if (stack_of_op != NULL)
-    out = convOutToD(&stack_of_num, &stack_of_op);
-  else
-    out = stack_of_num->num;
+  // Perform the final calculation using the stacks
+  out = (stack_of_op != NULL) ? convOutToD(&stack_of_num, &stack_of_op) : stack_of_num->num;
+  // Pop the remaining number from the stack
   popNum(&stack_of_num);
   return out;
 }
@@ -399,25 +427,21 @@ void calcCredit(double sum, double years, double months, double percent,
   double term = years * 12 + months;
   double P = percent / 12 / 100;
   if (!flag) {
-    double N = P / (pow((1 + P), (int)term) - 1);
+    double N = P / (pow((1 + P), term) - 1);
     *pay = sum * (P + N);
     *convOutToD = *pay * term;
     *overpay = *convOutToD - sum;
   } else {
     double first_sum = sum;
-    double b =
-        sum / term;  //  Calculation of the monthly principal payment.
-    double Imax = sum * P;  // Share of interest in the monthly payment.
-    *max_payment = b + Imax;  // Monthly installment amount
+    double b = sum / term;   // Calculation of the monthly principal payment.
+    double Imax = sum * P;   // Share of interest in the monthly payment.
+    *max_payment = b + Imax; // Monthly installment amount
     *convOutToD = *max_payment;
-    term--;
-    double Imin = 0;
-    while (term) {
+    for (int i = 1; i < term; i++) {
       sum -= b;
-      Imin = sum * P;
+      double Imin = sum * P;
       *min_payment = b + Imin;
       *convOutToD += *min_payment;
-      term--;
     }
     *overpay = *convOutToD - first_sum;
   }
@@ -429,5 +453,9 @@ void calcDeposit(double amount, int days, double deposit_rate,
   if (flag) {
     *profitability = (amount * deposit_rate * (double)days / 365) / 100;
     *convOutToD = amount + *profitability;
+  } else {
+    // Set default values when flag is not set
+    *profitability = 0.0;
+    *convOutToD = amount;
   }
 }

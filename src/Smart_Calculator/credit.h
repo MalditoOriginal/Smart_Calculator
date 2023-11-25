@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-extern "C" { // подключаем сишный файл извне
+extern "C" { // Connect C file externally
 #include "../s21_smartcalc.h"
 }
 
