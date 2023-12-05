@@ -2,38 +2,46 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    connect(ui->pushButton_1, SIGNAL(clicked()), this, SLOT(digits_numbers()));
-    connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(digits_numbers()));
-    connect(ui->pushButton_3, SIGNAL(clicked()), this, SLOT(digits_numbers()));
-    connect(ui->pushButton_4, SIGNAL(clicked()), this, SLOT(digits_numbers()));
-    connect(ui->pushButton_5, SIGNAL(clicked()), this, SLOT(digits_numbers()));
-    connect(ui->pushButton_6, SIGNAL(clicked()), this, SLOT(digits_numbers()));
-    connect(ui->pushButton_7, SIGNAL(clicked()), this, SLOT(digits_numbers()));
-    connect(ui->pushButton_8, SIGNAL(clicked()), this, SLOT(digits_numbers()));
-    connect(ui->pushButton_9, SIGNAL(clicked()), this, SLOT(digits_numbers()));
-    connect(ui->pushButton_0, SIGNAL(clicked()), this, SLOT(zero()));
-    connect(ui->pushButton_openbracket, SIGNAL(clicked()), this, SLOT(brackets()));
-    connect(ui->pushButton_closebracket, SIGNAL(clicked()), this, SLOT(brackets()));
-    connect(ui->pushButton_sum, SIGNAL(clicked()), this, SLOT(math_operations()));
-    connect(ui->pushButton_sub, SIGNAL(clicked()), this, SLOT(minus()));
-    connect(ui->pushButton_div, SIGNAL(clicked()), this, SLOT(math_operations()));
-    connect(ui->pushButton_mul, SIGNAL(clicked()), this, SLOT(math_operations()));
-    connect(ui->pushButton_pow, SIGNAL(clicked()), this, SLOT(math_operations()));
-    connect(ui->pushButton_mod, SIGNAL(clicked()), this, SLOT(math_operations()));
-    connect(ui->pushButton_cos, SIGNAL(clicked()), this, SLOT(trigonometry()));
-    connect(ui->pushButton_sin, SIGNAL(clicked()), this, SLOT(trigonometry()));
-    connect(ui->pushButton_tan, SIGNAL(clicked()), this, SLOT(trigonometry()));
-    connect(ui->pushButton_acos, SIGNAL(clicked()), this, SLOT(trigonometry()));
-    connect(ui->pushButton_asin, SIGNAL(clicked()), this, SLOT(trigonometry()));
-    connect(ui->pushButton_atan, SIGNAL(clicked()), this, SLOT(trigonometry()));
-    connect(ui->pushButton_log, SIGNAL(clicked()), this, SLOT(trigonometry()));
-    connect(ui->pushButton_ln, SIGNAL(clicked()), this, SLOT(trigonometry()));
-    connect(ui->pushButton_sqrt, SIGNAL(clicked()), this, SLOT(trigonometry()));
+    // Create a list of buttons and their corresponding slots
+    QList<QPair<QPushButton*, const char*>> buttonConnections = {
+        { ui->pushButton_1, SLOT(digits_numbers()) },
+        { ui->pushButton_2, SLOT(digits_numbers()) },
+        { ui->pushButton_3, SLOT(digits_numbers()) },
+        { ui->pushButton_4, SLOT(digits_numbers()) },
+        { ui->pushButton_5, SLOT(digits_numbers()) },
+        { ui->pushButton_6, SLOT(digits_numbers()) },
+        { ui->pushButton_7, SLOT(digits_numbers()) },
+        { ui->pushButton_8, SLOT(digits_numbers()) },
+        { ui->pushButton_9, SLOT(digits_numbers()) },
+        { ui->pushButton_0, SLOT(zero()) },
+        { ui->pushButton_openbracket, SLOT(brackets()) },
+        { ui->pushButton_closebracket, SLOT(brackets()) },
+        { ui->pushButton_sum, SLOT(math_operations()) },
+        { ui->pushButton_sub, SLOT(minus()) },
+        { ui->pushButton_div, SLOT(math_operations()) },
+        { ui->pushButton_mul, SLOT(math_operations()) },
+        { ui->pushButton_pow, SLOT(math_operations()) },
+        { ui->pushButton_mod, SLOT(math_operations()) },
+        { ui->pushButton_cos, SLOT(trigonometry()) },
+        { ui->pushButton_sin, SLOT(trigonometry()) },
+        { ui->pushButton_tan, SLOT(trigonometry()) },
+        { ui->pushButton_acos, SLOT(trigonometry()) },
+        { ui->pushButton_asin, SLOT(trigonometry()) },
+        { ui->pushButton_atan, SLOT(trigonometry()) },
+        { ui->pushButton_log, SLOT(trigonometry()) },
+        { ui->pushButton_ln, SLOT(trigonometry()) },
+        { ui->pushButton_sqrt, SLOT(trigonometry()) }
+    };
+
+    // Connect the buttons to their respective slots using a loop
+    for (const auto& buttonConnection : buttonConnections) {
+        connect(buttonConnection.first, SIGNAL(clicked()), this, buttonConnection.second);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -85,19 +93,28 @@ void MainWindow::mul_before_num()
 
 }
 
-void MainWindow::digits_numbers() // numbers
+void MainWindow::digits_numbers()
 {
-    QPushButton *button = (QPushButton *)sender();
-    if(!x_line) {
+    QPushButton *button = qobject_cast<QPushButton*>(sender());
+
+    if (!button) {
+        // Handle the case where sender() is not a QPushButton
+        return;
+    }
+
+    if (!x_line) {
         check_emptiness();
-
         check_error();
-
         mul_before_num();
-        if(ui->Result_show->text().endsWith("0") && !zero_first) ui->Result_show->setText("");
+
+        QString buttonText = button->text();
+
+        if (ui->Result_show->text().endsWith("0") && !zero_first) {
+            ui->Result_show->setText("");
+        }
 
         if (!zero_first) {
-            ui->Result_show->setText(ui->Result_show->text().append(button->text()));
+            ui->Result_show->setText(ui->Result_show->text().append(buttonText));
             math_func = 0;
             trig_func = 0;
             number = 1;
@@ -105,12 +122,11 @@ void MainWindow::digits_numbers() // numbers
             QString tmp = ui->Result_show->text();
             tmp.chop(1);
             ui->Result_show->setText(tmp);
-            ui->Result_show->setText(ui->Result_show->text().append(button->text()));
+            ui->Result_show->setText(ui->Result_show->text().append(buttonText));
             math_func = 0;
             trig_func = 0;
             number = 1;
-            zero_first = 0;
-
+            zero_first = false;
         }
     } else {
         ui->x_num->setText(ui->x_num->text().append(button->text()));
@@ -119,44 +135,53 @@ void MainWindow::digits_numbers() // numbers
 }
 
 
-void MainWindow::zero() // Zero
+void MainWindow::zero()
 {
-    QPushButton *button = (QPushButton *)sender();
+    QPushButton *button = qobject_cast<QPushButton*>(sender());
 
     check_emptiness();
-    if(error) {
+
+    if (error) {
         ui->Result_show->setText("");
         init_flags();
     }
 
-    if(!x_line) {
+    if (!x_line) {
         mul_before_num();
-        if(!zero_first) {
+
+        if (!zero_first) {
             ui->Result_show->setText(ui->Result_show->text().append(button->text()));
         }
-        if(!point && !number) zero_first = 1;
-    } else {
-        if(!x_zero)
-            ui->x_num->setText(ui->x_num->text().append(button->text()));
-        if(!x_number && !x_dot) x_zero = 1;
-    }
 
+        if (!point && !number) {
+            zero_first = true;
+        }
+    } else {
+        if (!x_zero) {
+            ui->x_num->setText(ui->x_num->text().append(button->text()));
+        }
+
+        if (!x_number && !x_dot) {
+            x_zero = true;
+        }
+    }
 }
 
-void MainWindow::on_pushButton_dot_clicked() // Dot
+void MainWindow::on_pushButton_dot_clicked()
 {
-    QPushButton *button = (QPushButton *)sender();
-    if(!x_line) {
-        if((number && !point) || zero_first) {
+    QPushButton *button = qobject_cast<QPushButton*>(sender());
+
+    if (!x_line) {
+        if ((number && !point) || zero_first) {
             ui->Result_show->setText(ui->Result_show->text().append(button->text()));
-            point = 1;
-            zero_first = 0;
+            point = true;
+            zero_first = false;
         }
     } else {
-        if((x_number && !x_dot)|| x_zero) {
+        if ((x_number && !x_dot) || x_zero) {
             ui->x_num->setText(ui->x_num->text().append(button->text()));
-            x_dot = 1;
-            x_zero = 0;
+            x_dot = true;
+            x_zero = false;
         }
     }
 }
@@ -183,68 +208,65 @@ void MainWindow::on_pushButton_x_clicked() // Var X
     }
 }
 
-void MainWindow::math_operations() // + * / ^ %
+void MainWindow::math_operations()
 {
-    QPushButton *button = (QPushButton *)sender();
-    if(!x_line) {
+    QPushButton *button = qobject_cast<QPushButton*>(sender());
+
+    if (!x_line) {
         check_emptiness();
 
         if (number || ui->Result_show->text().endsWith(")") || ui->Result_show->text().endsWith("x")) {
             ui->Result_show->setText(ui->Result_show->text().append(button->text()));
-        number = 0;
-        math_func = 1;
-        point = 0;
-        if(zero_first) zero_first = 0;
+            number = false;
+            math_func = true;
+            point = false;
+            zero_first = false;
         }
     }
 }
 
-void MainWindow::minus() // -
+void MainWindow::minus()
 {
-    QPushButton *button = (QPushButton *)sender();
+    QPushButton *button = qobject_cast<QPushButton*>(sender());
 
-    if(!x_line) {
+    if (!x_line) {
         check_emptiness();
-
         check_error();
 
-        if(ui->Result_show->text().endsWith("(") || (math_func && !ui->Result_show->text().endsWith("+")) || number || ui->Result_show->text().isEmpty() || ui->Result_show->text().endsWith("x")) {
+        if (ui->Result_show->text().endsWith("(") || (math_func && !ui->Result_show->text().endsWith("+")) || number || ui->Result_show->text().isEmpty() || ui->Result_show->text().endsWith("x")) {
             ui->Result_show->setText(ui->Result_show->text().append(button->text()));
-            number = 0;
-            point = 0;
-            math_func = 0;
+            number = false;
+            point = false;
+            math_func = false;
         }
     } else {
-        if(!x_minus && ui->x_num->text().isEmpty()) {
+        if (!x_minus && ui->x_num->text().isEmpty()) {
             ui->x_num->setText(ui->x_num->text().append(button->text()));
-            x_minus = 1;
+            x_minus = true;
         }
     }
 }
 
-void MainWindow::trigonometry() // Trigonometry
+void MainWindow::trigonometry()
 {
-    QPushButton *button = (QPushButton *)sender();
+    QPushButton *button = qobject_cast<QPushButton*>(sender());
 
-    if(!x_line) {
-
+    if (!x_line) {
         check_error();
-
         check_emptiness();
 
         if (number || ui->Result_show->text().endsWith("0") || ui->Result_show->text().endsWith("x")) {
             ui->Result_show->setText(ui->Result_show->text().append("*"));
-            if(number) number = 0;
+            if (number) number = false;
         }
 
-        if (zero_first) zero_first = 0;
+        if (zero_first) zero_first = false;
 
-        ui->Result_show->setText(ui->Result_show->text().append(button->text()));
-        ui->Result_show->setText(ui->Result_show->text() + "(");
+        ui->Result_show->setText(ui->Result_show->text() + button->text() + "(");
         open_bracket++;
     }
-
 }
+
 
 void MainWindow::brackets() // brackets
 {
@@ -301,8 +323,8 @@ void MainWindow::on_pushButton_eq_clicked() // Equality
     QByteArray ba_1 = str.toLocal8Bit();
     char *c_str = ba_1.data();
     double x = ui->x_num->text().toDouble();
-    double res = smart_calc(c_str, x);
-    QString answer = QString::number(res, 'g', 7);
+    double result = smart_calc(c_str, x);
+    QString answer = QString::number(result, 'g', 7);
     if(answer == "nan" || answer == "inf") {
         ui->Result_show->setText("Error");
         error = 1;

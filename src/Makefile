@@ -3,7 +3,7 @@ GCOV = -fprofile-arcs -ftest-coverage
 CC = gcc
 LIBS = -lcheck
 RM = rm -rf
-SRCS = s21_smartcalc.c
+SRCS = s21_smartcalc.c handleOps.c evalRPN.c calcCredit.c calcDeposit.c
 TARGET = Smart_Calculator
 OBJS = $(SRCS:.c=.o)
 OS := $(shell uname -s)
@@ -19,7 +19,7 @@ ADD_LIB =
 TEST_FLAGS =-lcheck
 endif
 
-all: s21_smartcalc gcov_report
+all: s21_smartcalc test
 
 s21_smartcalc: s21_smartcalc.a
 	$(CC) unit_test.c -lcheck -L. s21_smartcalc.a -o s21_smartcalc
@@ -30,17 +30,20 @@ s21_smartcalc.a:
 	ranlib s21_smartcalc.a
 
 install:
-	qmake -o Executables/Makefile $(TARGET)/$(TARGET).pro
-	cd Executables && make
+	qmake -o bin/Makefile $(TARGET)/$(TARGET).pro
+	cd bin && make
 
 start: install
-	cd Executables/$(TARGET).app/Contents/MacOS && ./$(TARGET)
+	cd bin/$(TARGET).app/Contents/MacOS && ./$(TARGET)
 
 uninstall: clean
-	rm -rf Executables
+	rm -rf bin
 
-package: install 
+dist: install 
 	cd .. && tar -czf $(TARGET).tgz src
+
+dvi:
+	open -a "Google Chrome" readme.md
 
 test: s21_smartcalc.a
 	$(CC) unit_test.c -lcheck -L. s21_smartcalc.a -o smartcalc_test
@@ -62,11 +65,13 @@ valgrind_check: test
 leak: test
 	CK_FORK=no leaks -atExit -- ./s21_smartcalc
 
-style_test:
+style_check:
 	clang-format -style=Google -n *.c *.h
+	find Smart_Calculator -name '*.c' -o -name '*.h' -exec clang-format -style=Google -n {} +
 
-style_change:
+style_apply:
 	clang-format -style=Google -i *.c *.h
+	find Smart_Calculator -name '*.c' -o -name '*.h' -exec clang-format -style=Google -i {} +
 
 install_brew:
 	cd ~
@@ -77,4 +82,4 @@ rebuild:
 	$(MAKE) clean
 	$(MAKE) all
 
-.PHONY: all install clean test s21_smartcalc.a gcov_report
+.PHONY: all install clean test s21_smartcalc.a gcov_report style_check style_apply dist dvi

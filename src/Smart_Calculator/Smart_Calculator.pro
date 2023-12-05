@@ -15,6 +15,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp\
     ../s21_smartcalc.c \
+    ../handleOps.c ../evalRPN.c ../calcCredit.c ../calcDeposit.c \
     qcustomplot.cpp
 
 HEADERS += \

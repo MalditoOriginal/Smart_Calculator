@@ -13,50 +13,69 @@ Deposit::~Deposit()
     delete ui;
 }
 
-
-
 void Deposit::on_calculate_clicked()
 {
-    if(!ui->sum->text().isEmpty() && (!ui->years->text().isEmpty() || !ui->months->text().isEmpty()) && !ui->rate->text().isEmpty()) {
-        amount = ui->sum->text().toDouble();
-        years = months = 0;
-        if(!ui->years->text().isEmpty()) years = ui->years->text().toInt();
-        if(years > 3) {
-            int residue = years % 4;
-            years -= residue;
-            int lean = years / 4;
-            years = 3 * lean + residue;
-            days = years * 365 + lean * 366;
+    // Validate input; if validation fails, return early
+    if (!validateInput())
+        return;
 
-        } else {
-            days = years * 365;
-        }
-        if(!ui->months->text().isEmpty()) {
-            months = ui->months->text().toInt();
-            correction();
-            days += 31;
-            months--;
-            while(months) {
-                days += 30;
-                months--;
-            }
-            days += correct;
-        }
-        deposit_rate = ui->rate->text().toDouble();
-        profitability = 0, total = 0;
-        if (ui->no->isChecked()) {
+    // Extract input values from UI elements
+    amount = ui->sum->text().toDouble();
+    years = ui->years->text().isEmpty() ? 0 : calculateAdjustedYears(ui->years->text().toInt());
+    months = ui->months->text().isEmpty() ? 0 : ui->months->text().toInt();
+
+    // Perform a correction step
+    correction();
+
+    // Calculate the total number of days
+    days = years * 365 + months * 30 + correct;
+
+    // Extract deposit rate from UI element
+    deposit_rate = ui->rate->text().toDouble();
+    profitability = 0, total = 0;
+
+    // Check if a specific option is selected (e.g., "no")
+    if (ui->no->isChecked()) {
+        // Perform deposit calculation
         calcDeposit(amount, days, deposit_rate, &profitability, &total, 1);
-        income = QString::number(profitability, 'g', 7);
-        total_sum = QString::number(total, 'g', 7);
-        ui->income->setText(income);
-        ui->total->setText(total_sum);
-        }
+
+        // Update the user interface with the calculated values
+        updateUI();
     }
+}
+
+bool Deposit::validateInput() const
+{
+    return !ui->sum->text().isEmpty() && (!ui->years->text().isEmpty() || !ui->months->text().isEmpty()) && !ui->rate->text().isEmpty();
+}
+
+int Deposit::calculateAdjustedYears(int inputYears) const
+{
+    /* Formula for years greater than three */
+    if (inputYears > 3) {
+        int residue = inputYears % 4;
+        return 3 * (inputYears / 4) + residue;
+    } else {
+        return inputYears;  /* if years less than three the residue remains the same */
+    }
+}
+
+void Deposit::updateUI()
+{
+    // Format profitability and total as strings
+    income = QString::number(profitability, 'g', 7);
+    total_sum = QString::number(total, 'g', 7);
+
+    // Update UI elements with the formatted values
+    ui->income->setText(income);
+    ui->total->setText(total_sum);
 }
 
 void Deposit::correction()
 {
     correct = 0;
+
+    // Adjust correct based on the value of the months variable
     if(months == 2) correct = -2;
     if(months == 3 || months == 4) correct = -1;
     if(months == 7) correct = 1;

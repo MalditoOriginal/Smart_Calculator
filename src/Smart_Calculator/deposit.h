@@ -3,31 +3,41 @@
 
 #include <QWidget>
 
-extern "C" { // Connect C file externally
+extern "C" {  // Connect C file externally
 #include "../s21_smartcalc.h"
 }
 
+// Declare the UI namespace
 namespace Ui {
 class Deposit;
 }
 
-class Deposit : public QWidget
-{
-    Q_OBJECT
+// Declare the Deposit class, subclassing QWidget
+class Deposit : public QWidget {
+  Q_OBJECT /* Macro indicating that this class uses Qt's meta-object system */
 
-public:
-    explicit Deposit(QWidget *parent = nullptr);
-    ~Deposit();
+      public :
+      // Constructor
+      explicit Deposit(QWidget *parent = nullptr);
 
-private slots:
-    void on_calculate_clicked();
-    void correction();
+  // Destructor
+  ~Deposit();
 
-private:
-    Ui::Deposit *ui;
-    double amount, deposit_rate, tax_rate, profitability, total;
-    int years, months, days, correct;
-    QString total_sum, income;
+ private slots:
+  // Slot for handling the click event of a button named "calculate"
+  void on_calculate_clicked();
+  void correction();
+  bool validateInput() const;
+  int calculateAdjustedYears(int inputYears) const;
+
+  // updateUI: updating the user interface
+  void updateUI();
+
+ private:
+  Ui::Deposit *ui;  // ui: pointer to the UI components
+  double amount, deposit_rate, tax_rate, profitability, total;
+  int years, months, days, correct;
+  QString total_sum, income;
 };
 
-#endif // DEPOSIT_H
+#endif  // DEPOSIT_H

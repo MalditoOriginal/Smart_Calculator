@@ -256,7 +256,7 @@ END_TEST
 
 /* uno minus */
 
-START_TEST(uno_minus_1) {
+START_TEST(unary_minus_1) {
   char *string = "2*-5";
   double res = -10;
   double calc = smart_calc(string, 0);
@@ -264,7 +264,7 @@ START_TEST(uno_minus_1) {
 }
 END_TEST
 
-START_TEST(uno_minus_2) {
+START_TEST(unary_minus_2) {
   char *string = "-2*6";
   double res = -12;
   double calc = smart_calc(string, 0);
@@ -272,7 +272,7 @@ START_TEST(uno_minus_2) {
 }
 END_TEST
 
-START_TEST(uno_minus_3) {
+START_TEST(unary_minus_3) {
   char *string = "-6/(-2)*3";
   double res = 9;
   double calc = smart_calc(string, 0);
@@ -280,7 +280,7 @@ START_TEST(uno_minus_3) {
 }
 END_TEST
 
-START_TEST(uno_minus_4) {
+START_TEST(unary_minus_4) {
   char *string = "-6/(-2)*-3";
   double res = -9;
   double calc = smart_calc(string, 0);
@@ -288,7 +288,7 @@ START_TEST(uno_minus_4) {
 }
 END_TEST
 
-START_TEST(uno_minus_5) {
+START_TEST(unary_minus_5) {
   char *string = "-6/(-2)*-3*(-10-1)";
   double res = 99;
   double calc = smart_calc(string, 0);
@@ -296,7 +296,7 @@ START_TEST(uno_minus_5) {
 }
 END_TEST
 
-START_TEST(uno_minus_6) {
+START_TEST(unary_minus_6) {
   char *string = "-6/-2*-3*(-10-1)";
   double res = 99;
   double calc = smart_calc(string, 0);
@@ -304,7 +304,7 @@ START_TEST(uno_minus_6) {
 }
 END_TEST
 
-START_TEST(uno_minus_7) {
+START_TEST(unary_minus_7) {
   char *string = "-16/8+(-8*-1)/-2";
   double res = -6;
   double calc = smart_calc(string, 0);
@@ -312,7 +312,7 @@ START_TEST(uno_minus_7) {
 }
 END_TEST
 
-START_TEST(uno_minus_8) {
+START_TEST(unary_minus_8) {
   char *string = "-16/(8*-2)+(-8*-1)/-2";
   double res = -3;
   double calc = smart_calc(string, 0);
@@ -320,7 +320,7 @@ START_TEST(uno_minus_8) {
 }
 END_TEST
 
-START_TEST(uno_minus_9) {
+START_TEST(unary_minus_9) {
   char *string = "(-92-8)*-1";
   double res = 100;
   double calc = smart_calc(string, 0);
@@ -328,7 +328,7 @@ START_TEST(uno_minus_9) {
 }
 END_TEST
 
-START_TEST(uno_minus_10) {
+START_TEST(unary_minus_10) {
   char *string = "-(-92-8)*-1";
   double res = -100;
   double calc = smart_calc(string, 0);
@@ -336,7 +336,7 @@ START_TEST(uno_minus_10) {
 }
 END_TEST
 
-START_TEST(uno_minus_11) {
+START_TEST(unary_minus_11) {
   char *string = "-(-92-8)*-(1/-10)";
   double res = 10;
   double calc = smart_calc(string, 0);
@@ -344,7 +344,7 @@ START_TEST(uno_minus_11) {
 }
 END_TEST
 
-START_TEST(uno_minus_12) {
+START_TEST(unary_minus_12) {
   char *string = "1*-(-1)";
   double res = 1;
   double calc = smart_calc(string, 0);
@@ -649,19 +649,19 @@ int main(void) {
   tcase_add_test(s21_smartcalc_h, brackets_13);
   tcase_add_test(s21_smartcalc_h, brackets_14);
 
-  /* uno minus */
-  tcase_add_test(s21_smartcalc_h, uno_minus_1);
-  tcase_add_test(s21_smartcalc_h, uno_minus_2);
-  tcase_add_test(s21_smartcalc_h, uno_minus_3);
-  tcase_add_test(s21_smartcalc_h, uno_minus_4);
-  tcase_add_test(s21_smartcalc_h, uno_minus_5);
-  tcase_add_test(s21_smartcalc_h, uno_minus_6);
-  tcase_add_test(s21_smartcalc_h, uno_minus_7);
-  tcase_add_test(s21_smartcalc_h, uno_minus_8);
-  tcase_add_test(s21_smartcalc_h, uno_minus_9);
-  tcase_add_test(s21_smartcalc_h, uno_minus_10);
-  tcase_add_test(s21_smartcalc_h, uno_minus_11);
-  tcase_add_test(s21_smartcalc_h, uno_minus_12);
+  /* unary minus */
+  tcase_add_test(s21_smartcalc_h, unary_minus_1);
+  tcase_add_test(s21_smartcalc_h, unary_minus_2);
+  tcase_add_test(s21_smartcalc_h, unary_minus_3);
+  tcase_add_test(s21_smartcalc_h, unary_minus_4);
+  tcase_add_test(s21_smartcalc_h, unary_minus_5);
+  tcase_add_test(s21_smartcalc_h, unary_minus_6);
+  tcase_add_test(s21_smartcalc_h, unary_minus_7);
+  tcase_add_test(s21_smartcalc_h, unary_minus_8);
+  tcase_add_test(s21_smartcalc_h, unary_minus_9);
+  tcase_add_test(s21_smartcalc_h, unary_minus_10);
+  tcase_add_test(s21_smartcalc_h, unary_minus_11);
+  tcase_add_test(s21_smartcalc_h, unary_minus_12);
 
   /* pow */
   tcase_add_test(s21_smartcalc_h, pow_1);
